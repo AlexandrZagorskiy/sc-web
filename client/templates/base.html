@@ -122,7 +122,8 @@
     <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">{# Windows will be added later #}</div>
     <div id="window-header-tools" class="pull-right">
         <div class="btn-group">
-            <button type="button" class="btn btn-default" id="windows-list">
+            <button type="button" class="btn btn-default" id="windows-list"
+                    sc_control_sys_idtf="ui_control_change_window_size">
                 <span class="glyphicon glyphicon-resize-full"></span>
             </button>            
             <button type="button" class="histoy-item-btn btn btn-default mode-switching-panel" data-toggle="dropdown"
@@ -134,12 +135,13 @@
                     sc_control_sys_idtf="ui_control_print_window_content">
                 <span class="glyphicon glyphicon-print"></span>
             </button>
-            <button type="button" class="btn btn-default" id="history-item-link" data-container="body" data-toggle="popover" data-placement="bottom">
+            <button type="button" class="btn btn-default" id="history-item-link" data-container="body" data-toggle="popover" data-placement="bottom"
+                    sc_control_sys_idtf="ui_control_display_link">
                 <span class="glyphicon glyphicon-link"></span>
             </button>
             {% if user %}
             <button type="button" class="btn btn-default" id="eekb_comand_btn" data-container="body" data-toggle="popover"
-                    data-placement="bottom">
+                    data-placement="bottom" sc_control_sys_idtf="ui_control_display_eekb_menu">
                 <span class="glyphicon glyphicon-align-right"></span>
             </button>
             {% end %}
