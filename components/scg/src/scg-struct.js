@@ -510,30 +510,39 @@ function scgScStructTranslator(_editor, _sandbox) {
                     // create user draft contour
                     var scDraftGen = function () {
                         var dfd = new jQuery.Deferred();
-
-                        if (!editor.scene.draft_addr) {
-                            // create contour node
-                            window.sctpClient.create_node(sc_type_const | sc_type_node |
-                                sc_type_node_struct).done(function (node) {
-                                userContours[userScAddr] = node;
-                                editor.scene.draft_addr = node;
-                                // put contour node into draft set
-                                window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.draft,
-                                    node).done(function () {
-                                    // create nrel_authors relation between user draft contour and user
-                                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, node, userScAddr).done(function (arc_addr) {
-                                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_authors, arc_addr).done(function () {
-                                            addDraftObjects(node);
-                                            dfd.resolve();
-                                        }).fail(function () {
-                                            dfd.resolve();
-                                        });
-                                    }).fail(dfd.reject);
-                                }).fail(dfd.reject);
-                            }).fail(dfd.reject);
-                        } else {
+                        if (editor.scene.draft_addr) {
+                            // draft was created already for this scene - it's an update
                             addDraftObjects(editor.scene.draft_addr);
-                            dfd.resolve();
+                            dfd.resolve()
+                        } else {
+                            // check if SCg scene root is a draft
+                            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [window.scKeynodes.draft, sc_type_arc_pos_const_perm, editor.render.sandbox.addr])
+                                .done(function () {
+                                    // update draft
+                                    addDraftObjects(editor.scene.draft_addr);
+                                    dfd.resolve()
+                                })
+                                .fail(function () {
+                                    // create draft contour node
+                                    window.sctpClient.create_node(sc_type_const | sc_type_node |
+                                        sc_type_node_struct).done(function (node) {
+                                            userContours[userScAddr] = node;
+                                            editor.scene.draft_addr = node;
+                                            // put contour node into draft set
+                                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.draft,
+                                                node).done(function () {
+                                                    // create nrel_authors relation between user draft contour and user
+                                                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, node, userScAddr).done(function (arc_addr) {
+                                                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_authors, arc_addr).done(function () {
+                                                            addDraftObjects(node);
+                                                            dfd.resolve();
+                                                        }).fail(function () {
+                                                            dfd.resolve();
+                                                        });
+                                                    }).fail(dfd.reject);
+                                                }).fail(dfd.reject);
+                                        }).fail(dfd.reject);
+                                });
                         }
                         return dfd.promise();
                     };
